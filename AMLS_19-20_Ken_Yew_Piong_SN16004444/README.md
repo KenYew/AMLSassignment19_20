@@ -1,7 +1,7 @@
-# README -- AMLS_19-20_Ken_Yew_Piong_SN16004444
-Name: Ken Yew Piong
-UCL ID: 16004444
-Date of Submission: 10th January 2020
+# README - AMLS_19-20_Ken_Yew_Piong_SN16004444
+* Name: Ken Yew Piong
+* UCL ID: 16004444
+* Date of Submission: 10th January 2020
 
 Requires Python3 (3.7.3).
 
@@ -16,12 +16,10 @@ Requires Python3 (3.7.3).
 ## Python files
 
 * main.py 
-
-- description
+description
 
 * util.py 
-
-- description
+description
 
 
 ##./project_organization_example
