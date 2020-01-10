@@ -1,4 +1,4 @@
-import os, math, cv2, dlib, itertools
+import os, math, cv2, dlib, itertools, joblib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,6 +9,7 @@ from sklearn.metrics import classification_report, accuracy_score, confusion_mat
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_score, learning_curve
+from sklearn.ensemble import RandomForestClassifier
 
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
@@ -41,6 +42,21 @@ def data_preprocessing(X, y, split_percentage, feature_type):
     y_test = list(zip(*y_test))[0]
     
     return X_all, X_train, X_test, y_all, y_train, y_test
+
+def data_preprocessing_testset(X, y, feature_type):
+    
+    Y = np.array([y, -(y - 1)]).T
+    X_all = X
+    y_all = Y
+    
+    if feature_type == 'rgb': 
+        X_all = np.reshape(X_all, (X_all.shape[0], -1))
+    elif feature_type == 'landmarks':
+        X_all = X_all.reshape(len(X_all), 68*2)
+    
+    y_all = list(zip(*y_all))[0]
+    
+    return X_all, y_all
 
 def data_scaling(data, n_components):
     scaler = StandardScaler()
@@ -114,7 +130,7 @@ def run_dlib_shape(image):
 
     return dlibout, resized_image
 
-def extract_features_labels_from_celeba(sample_size):
+def extract_features_labels_from_celeba(sample_size, testset):
     """
     This function extracts the landmarks features for all images in the folder 'Dataset/celeba'.
     It also extracts the gender and smiling labels for each image.
@@ -126,7 +142,10 @@ def extract_features_labels_from_celeba(sample_size):
                             which a face was detected
     """
     # Global Parameters
-    basedir = './Datasets/celeba'
+    if testset == False:
+        basedir = './Datasets/celeba'
+    else:
+        basedir = './Datasets/celeba_test'
     images_dir = os.path.join(basedir,'img')
     labels_filename = 'labels.csv'
 
@@ -167,7 +186,7 @@ def extract_features_labels_from_celeba(sample_size):
     smiling_labels = (np.array(all_smiling_labels) + 1)/2
     return landmark_features, gender_labels, smiling_labels
 
-def extract_features_labels_from_cartoon_set(feature_type, sample_size): 
+def extract_features_labels_from_cartoon_set(feature_type, sample_size, testset): 
     """
     This function extracts the features for all images in the folder 'Dataset/cartoon_set'.
     It also extracts the eye color and face shape labels for each image.
@@ -181,7 +200,10 @@ def extract_features_labels_from_cartoon_set(feature_type, sample_size):
                             which a face was detected
     """
     # Global Parameters
-    basedir = './Datasets/cartoon_set'
+    if testset == False:
+        basedir = './Datasets/cartoon_set'
+    else:
+        basedir = './Datasets/cartoon_set_test'
     images_dir = os.path.join(basedir,'img')
     labels_filename = 'labels.csv'
 
@@ -237,17 +259,19 @@ def build_model_task_A1(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='linear', C=0.01)
     clf.fit(X_train, y_train)
+    joblib.dump(clf, 'models/Task_A1.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
     cm = confusion_matrix(y_true, y_pred)
-    
+
     return clf, acc_score_train, acc_score_test, cm
 
 def build_model_task_A2(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='poly', C=0.5)
     clf.fit(X_train, y_train)
+    joblib.dump(clf, 'models/Task_A2.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -257,8 +281,9 @@ def build_model_task_A2(X_train, X_test, y_train, y_test):
 
 def build_model_task_B1(X_train, X_test, y_train, y_test):
     # Input Dataset: RGB Images (128 x 128 pixels)
-    clf = SVC(kernel='poly', C=0.01)
+    clf = SVC(kernel='poly', C=0.01, max_iter=50000)
     clf.fit(X_train, y_train)
+    joblib.dump(clf, 'models/Task_B1.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -270,6 +295,7 @@ def build_model_task_B2(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='poly', C=0.5)
     clf.fit(X_train, y_train)
+    joblib.dump(clf, 'models/Task_B2.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -280,10 +306,16 @@ def build_model_task_B2(X_train, X_test, y_train, y_test):
 def build_svm_gridcv(X_train, X_test, y_train, y_test, cv_folds):
     # Set the parameters by cross-validation
     tuned_parameters = [{'kernel': ['rbf'],
-                         'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]},
-                        {'kernel': ['linear'], 'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]},
+                         'C': [0.01, 0.5, 0.1, 1, 10],
+                         'gamma': [0.01, 0.1, 1, 10]},
+                        {'kernel': ['linear'], 'C': [0.01, 0.5, 0.1, 1, 10]},
                         {'kernel': ['poly'],
-                         'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]}]
+                         'C': [0.01, 0.5, 0.1, 1, 10]}]
+#     tuned_parameters = [{'kernel': ['rbf'],
+#                          'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]},
+#                         {'kernel': ['linear'], 'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]},
+#                         {'kernel': ['poly'],
+#                          'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]}]
 
     scores = ['precision'] # 'recall'
 
@@ -410,3 +442,27 @@ def plot_confusion_matrix(cm,
     plt.ylabel('True label')
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.savefig(title+'.png')
+    
+# def build_model_task_B1(X_train, X_test, y_train, y_test):
+#     # Input Dataset: RGB Images (128 x 128 pixels)
+#     clf = RandomForestClassifier(n_estimators=100, max_features='sqrt')
+#     clf.fit(X_train, y_train)
+#     y_true, y_pred = y_test, clf.predict(X_test)
+#     acc_score_train = clf.score(X_train, y_train)
+#     acc_score_test = accuracy_score(y_test, y_pred)
+#     cm = confusion_matrix(y_true, y_pred)
+    
+#     return clf, acc_score_train, acc_score_test, cm
+
+# def build_model_task_B2(X_train, X_test, y_train, y_test):
+#     # Input Dataset: Landmarks
+#     clf = RandomForestClassifier(n_estimators=100, max_features='sqrt')
+#     clf.fit(X_train, y_train)
+#     y_true, y_pred = y_test, clf.predict(X_test)
+#     acc_score_train = clf.score(X_train, y_train)
+#     acc_score_test = accuracy_score(y_test, y_pred)
+#     cm = confusion_matrix(y_true, y_pred)
+    
+#     return clf, acc_score_train, acc_score_test, cm
+
+#     my_model = joblib.load('Task_B2.model')

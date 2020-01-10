@@ -1,4 +1,4 @@
-import os, math, cv2, dlib, warnings, itertools
+import os, math, cv2, dlib, warnings, itertools, joblib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,7 +16,8 @@ warnings.filterwarnings('ignore')
 # ======================================================================================================================
 # Data import for Task A1 and A2
 sample_size = 5000 # Full dataset import
-landmark_features_celeba, gender_labels, smiling_labels = extract_features_labels_from_celeba(sample_size)
+landmark_features_celeba, gender_labels, smiling_labels = extract_features_labels_from_celeba(sample_size, testset=False)
+landmark_features_celeba_test, gender_labels_test, smiling_labels_test = extract_features_labels_from_celeba(sample_size, testset=True)
 # ======================================================================================================================
 # Task A1 - Gender Recognition
 # Initialisation parameters
@@ -61,7 +62,8 @@ print('TA2:{},{},{};'.format(acc_A2_train, acc_A2_val, acc_A2_test))
 # Data import for Task B2
 feature_type = 'landmarks' # Feature extraction type
 sample_size = 10000 # Full dataset import  
-img_features_cartoon_set, _, face_shape_labels = extract_features_labels_from_cartoon_set(feature_type, sample_size)
+img_features_cartoon_set, _, face_shape_labels = extract_features_labels_from_cartoon_set(feature_type, sample_size, testset=False)
+img_features_cartoon_set_test, _, face_shape_labels_test = extract_features_labels_from_cartoon_set(feature_type, sample_size, testset=True)
 # ======================================================================================================================
 # Task B2 - Face Shape Recognition
 # Initialisation parameters
@@ -86,7 +88,8 @@ print('TB2:{},{},{};'.format(acc_B2_train, acc_B2_val, acc_B2_test))
 # Data import for Task B1
 feature_type = 'rgb' # Feature extraction type
 sample_size = 4000 
-img_features_cartoon_set, eye_color_labels, _ = extract_features_labels_from_cartoon_set(feature_type, sample_size)
+img_features_cartoon_set, eye_color_labels, _ = extract_features_labels_from_cartoon_set(feature_type, sample_size, testset=False)
+img_features_cartoon_set_test, eye_color_labels_test, _ = extract_features_labels_from_cartoon_set(feature_type, sample_size, testset=True)
 # ======================================================================================================================
 # Task B1 - Eye Colour Recognition
 # Initialisation parameters
