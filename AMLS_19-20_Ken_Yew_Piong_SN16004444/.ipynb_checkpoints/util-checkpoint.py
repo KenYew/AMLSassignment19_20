@@ -1,4 +1,4 @@
-import os, math, cv2, dlib, itertools, joblib
+import os, math, cv2, dlib, itertools
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,8 +8,7 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_score, learning_curve
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV, cross_val_score, learning_curve
 
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
@@ -259,7 +258,6 @@ def build_model_task_A1(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='linear', C=0.01)
     clf.fit(X_train, y_train)
-    joblib.dump(clf, 'models/Task_A1.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -271,7 +269,6 @@ def build_model_task_A2(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='poly', C=0.5)
     clf.fit(X_train, y_train)
-    joblib.dump(clf, 'models/Task_A2.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -283,7 +280,6 @@ def build_model_task_B1(X_train, X_test, y_train, y_test):
     # Input Dataset: RGB Images (128 x 128 pixels)
     clf = SVC(kernel='poly', C=0.01, max_iter=50000)
     clf.fit(X_train, y_train)
-    joblib.dump(clf, 'models/Task_B1.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -295,7 +291,6 @@ def build_model_task_B2(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='poly', C=0.5)
     clf.fit(X_train, y_train)
-    joblib.dump(clf, 'models/Task_B2.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -311,11 +306,6 @@ def build_svm_gridcv(X_train, X_test, y_train, y_test, cv_folds):
                         {'kernel': ['linear'], 'C': [0.01, 0.5, 0.1, 1, 10]},
                         {'kernel': ['poly'],
                          'C': [0.01, 0.5, 0.1, 1, 10]}]
-#     tuned_parameters = [{'kernel': ['rbf'],
-#                          'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]},
-#                         {'kernel': ['linear'], 'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]},
-#                         {'kernel': ['poly'],
-#                          'C': [0.01, 0.05, 0.1, 0.5, 1, 5, 10]}]
 
     scores = ['precision'] # 'recall'
 
@@ -442,27 +432,3 @@ def plot_confusion_matrix(cm,
     plt.ylabel('True label')
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.savefig(title+'.png')
-    
-# def build_model_task_B1(X_train, X_test, y_train, y_test):
-#     # Input Dataset: RGB Images (128 x 128 pixels)
-#     clf = RandomForestClassifier(n_estimators=100, max_features='sqrt')
-#     clf.fit(X_train, y_train)
-#     y_true, y_pred = y_test, clf.predict(X_test)
-#     acc_score_train = clf.score(X_train, y_train)
-#     acc_score_test = accuracy_score(y_test, y_pred)
-#     cm = confusion_matrix(y_true, y_pred)
-    
-#     return clf, acc_score_train, acc_score_test, cm
-
-# def build_model_task_B2(X_train, X_test, y_train, y_test):
-#     # Input Dataset: Landmarks
-#     clf = RandomForestClassifier(n_estimators=100, max_features='sqrt')
-#     clf.fit(X_train, y_train)
-#     y_true, y_pred = y_test, clf.predict(X_test)
-#     acc_score_train = clf.score(X_train, y_train)
-#     acc_score_test = accuracy_score(y_test, y_pred)
-#     cm = confusion_matrix(y_true, y_pred)
-    
-#     return clf, acc_score_train, acc_score_test, cm
-
-#     my_model = joblib.load('Task_B2.model')

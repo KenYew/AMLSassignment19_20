@@ -1,4 +1,4 @@
-import os, math, cv2, dlib, itertools, joblib
+import os, math, cv2, dlib, itertools
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -258,7 +258,6 @@ def build_model_task_A1(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='linear', C=0.01)
     clf.fit(X_train, y_train)
-    joblib.dump(clf, 'models/Task_A1.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -270,7 +269,6 @@ def build_model_task_A2(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='poly', C=0.5)
     clf.fit(X_train, y_train)
-    joblib.dump(clf, 'models/Task_A2.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -282,7 +280,6 @@ def build_model_task_B1(X_train, X_test, y_train, y_test):
     # Input Dataset: RGB Images (128 x 128 pixels)
     clf = SVC(kernel='poly', C=0.01, max_iter=50000)
     clf.fit(X_train, y_train)
-    joblib.dump(clf, 'models/Task_B1.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
@@ -294,7 +291,6 @@ def build_model_task_B2(X_train, X_test, y_train, y_test):
     # Input Dataset: Landmarks
     clf = SVC(kernel='poly', C=0.5)
     clf.fit(X_train, y_train)
-    joblib.dump(clf, 'models/Task_B2.model')
     y_true, y_pred = y_test, clf.predict(X_test)
     acc_score_train = clf.score(X_train, y_train)
     acc_score_test = accuracy_score(y_test, y_pred)
