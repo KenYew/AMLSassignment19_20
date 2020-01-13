@@ -1,7 +1,7 @@
-# README - AMLS_19-20_Ken_Yew_Piong_SN16004444
+# README - AMLSassignment19_20
 * Name: Ken Yew Piong
 * UCL ID: 16004444
-* Date of Submission: 10th January 2020
+* Date of Submission: 13th January 2020
 
 Requires Python3 (3.7.3).
 
@@ -16,16 +16,8 @@ Requires Python3 (3.7.3).
 ## Python files
 
 * main.py 
-description
+This is the main python file that you should use to run all four classification tasks and output all the accuracy score results. They rely on the util.py file to import all the necessary helper functions required for data pre-processing, machine learning models for all four classification tasks and plotting functions for learning curves and confusion matrices. 
 
 * util.py 
-description
+This is the utilities code consisting of all the helper functions required for data pre-processing, machine learning models for all four classification tasks and plotting functions for learning curves and confusion matrices. The full and completed machine learning models (for training, testing and validation) for each task are written in this file. 
 
-
-##./project_organization_example
-
-The example folder and code organization for the submission of your project. Replace the folder/file names with your name and SN (student number).
-
-## ./report_template
-
-The template for your report. We provide two versions: latex and MS word. The organization of your report will also be considered in the marking.
