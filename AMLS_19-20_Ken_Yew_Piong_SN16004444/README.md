@@ -20,5 +20,6 @@ Requires Python3 (3.7.3).
 This is the main python file that you should use to run all four classification tasks and output all the accuracy score results. It relies on the util.py file to import all the necessary helper functions required for data pre-processing, machine learning models for all four classification tasks and plotting functions for learning curves and confusion matrices. 
 
 * util.py 
+
 This is the utilities code consisting of all the helper functions required for data pre-processing, machine learning models for all four classification tasks and plotting functions for learning curves and confusion matrices. The full and completed machine learning models (for training, testing and validation) for each task are written in this file. 
 
