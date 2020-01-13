@@ -188,4 +188,3 @@ print('TA1:{},{},{};TA2:{},{},{};TB1:{},{},{};TB2:{},{},{};'.format(acc_A1_train
                                                                     acc_A2_train, acc_A2_val, acc_A2_test,
                                                                     acc_B1_train, acc_B1_val, acc_B1_test,
                                                                     acc_B2_train, acc_B2_val, acc_B2_test))
-
